@@ -12,6 +12,6 @@ class TrxReturn extends Model
 
     public function trxBorrow()
     {
-        return $this->belongsTo(TrxBorrow::class);
+        return $this->belongsTo(TrxBorrow::class, 'trx_borrows_id', 'id');
     }
 }

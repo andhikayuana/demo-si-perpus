@@ -16,11 +16,12 @@ class Book extends Model
 
     public function category()
     {
-        return $this->belongsTo(BookCategory::class);
+        return $this->belongsTo(BookCategory::class, 'book_categories_id', 'id');
     }
 
     public function trxBorrowDetails()
     {
-        return $this->hasMany(TrxBorrowDetail::class);
+        return $this->hasMany(TrxBorrowDetail::class, 'books_id', 'id');
     }
 }
+

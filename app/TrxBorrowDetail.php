@@ -13,11 +13,11 @@ class TrxBorrowDetail extends Model
 
     public function trxBorrow()
     {
-        return $this->belongsTo(TrxBorrow::class);
+        return $this->belongsTo(TrxBorrow::class, 'trx_borrows_id', 'id');
     }
 
     public function book()
     {
-        return $this->belongsTo(Book::class);
+        return $this->belongsTo(Book::class, 'books_id', 'id');
     }
 }

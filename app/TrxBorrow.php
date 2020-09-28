@@ -14,16 +14,16 @@ class TrxBorrow extends Model
 
     public function details()
     {
-        return $this->hasMany(TrxBorrowDetail::class);
+        return $this->hasMany(TrxBorrowDetail::class, 'trx_borrows_id', 'id');
     }
 
     public function member()
     {
-        return $this->belongsTo(Member::class);
+        return $this->belongsTo(Member::class, 'members_id', 'id');
     }
 
     public function trxReturn()
     {
-        return $this->hasOne(TrxReturn::class);
+        return $this->hasOne(TrxReturn::class, 'trx_borrows_id', 'id');
     }
 }

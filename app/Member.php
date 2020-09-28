@@ -14,6 +14,6 @@ class Member extends Model
 
     public function trxBorrows()
     {
-        return $this->hasMany(TrxBorrow::class);
+        return $this->hasMany(TrxBorrow::class, 'members_id', 'id');
     }
 }
