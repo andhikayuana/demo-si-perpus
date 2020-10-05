@@ -31,10 +31,10 @@
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div
             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom"
+            v-if="isHomePage"
           >
-            <h1 class="h2">Dashboard</h1>
+            <h3 v-if="isHomePage">Dashboard</h3>
           </div>
-
           <router-view />
         </main>
       </div>
@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       sidebar: [],
-      user: {}
+      user: {},
     };
   },
   mounted() {
@@ -71,6 +71,11 @@ export default {
             alert(err.message);
           });
       }
+    },
+  },
+  computed: {
+    isHomePage() {
+      return this.$route.name == "home";
     },
   },
 };
