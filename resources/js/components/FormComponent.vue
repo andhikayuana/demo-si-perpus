@@ -22,8 +22,28 @@
             </button>
           </div>
           <div class="modal-body">
+            <div
+              class="alert alert-danger alert-dismissible fade show"
+              role="alert"
+              v-if="hasError"
+            >
+              {{ errorMessage }}
+              <button
+                type="button"
+                class="close"
+                data-dismiss="alert"
+                aria-label="Close"
+                @click="resetForm"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
             <form id="formMain" @submit.prevent="onClickedSave">
-              <div class="form-group" v-for="(form, index) in forms" :key="index">
+              <div
+                class="form-group"
+                v-for="(form, index) in forms"
+                :key="index"
+              >
                 <label :for="form.name">{{ form.label }}</label>
                 <input
                   type="text"
@@ -60,25 +80,53 @@
 <script>
 export default {
   props: ["title", "url", "forms"],
+  mounted() {
+    const that = this;
+    $("#formModal").on("hidden.bs.modal", function (e) {
+      that.resetForm();
+    });
+
+    this.$parent.$on("on-edit", (item) => {
+      this.body = item;
+    });
+  },
   data() {
-      return {
-          body: {}
-      };
+    return {
+      body: {},
+      errorMessage: null,
+    };
   },
   methods: {
     onClickedSave() {
-      axios.post(this.url, this.body)
-        .then(response => {
-            this.body = {};
-            $('#formModal').modal('hide');
-            this.$emit('on-saved', response.data);
-        })
-        .catch(err => {
-            console.log(err);
-            alert(err.message);
-        });
-    },
+      if (!this.hasError) {
+        console.log(this.isNewRecord);
+        const request = this.isNewRecord
+          ? axios.post(this.url, this.body)
+          : axios.put(this.url+'/'+this.body.id, this.body);
 
+        request
+          .then((response) => {
+            $("#formModal").modal("hide");
+            this.$emit("on-saved", response.data);
+          })
+          .catch((err) => {
+            console.log(err.response.data);
+            this.errorMessage = err.response.data.message;
+          });
+      }
+    },
+    resetForm() {
+      this.body = {};
+      this.errorMessage = null;
+    },
+  },
+  computed: {
+    hasError() {
+      return this.errorMessage != null;
+    },
+    isNewRecord() {
+      return !this.body.hasOwnProperty("id");
+    },
   },
 };
 </script>

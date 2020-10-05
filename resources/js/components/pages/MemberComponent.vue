@@ -1,6 +1,6 @@
 <template>
   <div>
-    <table-component :url="url" :columns="columns" :title="title" />
+    <table-component :url="url" :columns="columns" :title="title" :forms="forms" />
   </div>
 </template>
 
@@ -28,6 +28,23 @@ export default {
           name: "address"
         }
       ],
+      forms: [
+        {
+          label: 'Nama',
+          name: 'name',
+          type: 'text'
+        },
+        {
+          label: 'Nomor HP',
+          name: 'phone',
+          type: 'text'
+        },
+        {
+          label: 'Alamat',
+          name: 'address',
+          type: 'textarea'
+        }
+      ]
     };
   },
 };

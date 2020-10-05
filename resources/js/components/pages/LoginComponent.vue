@@ -69,7 +69,8 @@ export default {
             window.location.reload();
           })
           .catch((err) => {
-            alert(err.message);
+            console.log(err.response.data);
+            alert(err.response.data.message);
           });
       } else {
         alert('email & password harus diisi! silakan periksa kembali');

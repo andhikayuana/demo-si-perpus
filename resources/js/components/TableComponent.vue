@@ -30,11 +30,12 @@
         </tr>
       </tbody>
     </table>
-    <form-component 
-        :title="title" 
-        :url="url" 
-        :forms="forms"
-        @on-saved="onSaved">
+    <form-component
+      :title="title"
+      :url="url"
+      :forms="forms"
+      @on-saved="onSaved"
+    >
     </form-component>
   </div>
 </template>
@@ -72,7 +73,8 @@ export default {
           console.log(response);
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err.response.data);
+          alert(err.response.data.message);
         });
     },
     getValueFrom(item, column) {
@@ -90,27 +92,29 @@ export default {
       return value;
     },
     onClickedEdit(item) {
-      $('#formModal').modal('show');
+      $("#formModal").modal("show");
+      this.$emit('on-edit', item);
     },
     onClickedDelete(item) {
       if (confirm("Hapus data dengan id : " + item.id)) {
-        axios.delete(this.url+'/'+item.id)
-            .then(response => {
-                this.fetchData();
-            })
-            .catch(err => {
-                console.log(err);
-                alert(err.message);
-            });
+        axios
+          .delete(this.url + "/" + item.id)
+          .then((response) => {
+            this.fetchData();
+          })
+          .catch((err) => {
+            console.log(err);
+            alert(err.message);
+          });
       }
     },
     onClickedAdd() {
-      $('#formModal').modal('show');
+      $("#formModal").modal("show");
     },
     onSaved(data) {
-        this.fetchData();
-    }
-  }
+      this.fetchData();
+    },
+  },
 };
 </script>
 

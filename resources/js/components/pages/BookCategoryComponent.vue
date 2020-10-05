@@ -23,7 +23,8 @@ export default {
       forms: [
         {
           label: 'Nama',
-          name: 'name'
+          name: 'name',
+          type: 'text'
         }
       ]
     };

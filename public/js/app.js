@@ -2001,26 +2001,73 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["title", "url", "forms"],
+  mounted: function mounted() {
+    var _this = this;
+
+    var that = this;
+    $("#formModal").on("hidden.bs.modal", function (e) {
+      that.resetForm();
+    });
+    this.$parent.$on("on-edit", function (item) {
+      _this.body = item;
+    });
+  },
   data: function data() {
     return {
-      body: {}
+      body: {},
+      errorMessage: null
     };
   },
   methods: {
     onClickedSave: function onClickedSave() {
-      var _this = this;
+      var _this2 = this;
 
-      axios.post(this.url, this.body).then(function (response) {
-        _this.body = {};
-        $('#formModal').modal('hide');
+      if (!this.hasError) {
+        console.log(this.isNewRecord);
+        var request = this.isNewRecord ? axios.post(this.url, this.body) : axios.put(this.url + '/' + this.body.id, this.body);
+        request.then(function (response) {
+          $("#formModal").modal("hide");
 
-        _this.$emit('on-saved', response.data);
-      })["catch"](function (err) {
-        console.log(err);
-        alert(err.message);
-      });
+          _this2.$emit("on-saved", response.data);
+        })["catch"](function (err) {
+          console.log(err.response.data);
+          _this2.errorMessage = err.response.data.message;
+        });
+      }
+    },
+    resetForm: function resetForm() {
+      this.body = {};
+      this.errorMessage = null;
+    }
+  },
+  computed: {
+    hasError: function hasError() {
+      return this.errorMessage != null;
+    },
+    isNewRecord: function isNewRecord() {
+      return !this.body.hasOwnProperty("id");
     }
   }
 });
@@ -2036,6 +2083,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
 //
 //
 //
@@ -2108,7 +2156,8 @@ __webpack_require__.r(__webpack_exports__);
         _this.response = response.data;
         console.log(response);
       })["catch"](function (err) {
-        console.log(err);
+        console.log(err.response.data);
+        alert(err.response.data.message);
       });
     },
     getValueFrom: function getValueFrom(item, column) {
@@ -2128,13 +2177,14 @@ __webpack_require__.r(__webpack_exports__);
       return value;
     },
     onClickedEdit: function onClickedEdit(item) {
-      $('#formModal').modal('show');
+      $("#formModal").modal("show");
+      this.$emit('on-edit', item);
     },
     onClickedDelete: function onClickedDelete(item) {
       var _this2 = this;
 
       if (confirm("Hapus data dengan id : " + item.id)) {
-        axios["delete"](this.url + '/' + item.id).then(function (response) {
+        axios["delete"](this.url + "/" + item.id).then(function (response) {
           _this2.fetchData();
         })["catch"](function (err) {
           console.log(err);
@@ -2143,7 +2193,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     onClickedAdd: function onClickedAdd() {
-      $('#formModal').modal('show');
+      $("#formModal").modal("show");
     },
     onSaved: function onSaved(data) {
       this.fetchData();
@@ -2182,7 +2232,8 @@ __webpack_require__.r(__webpack_exports__);
       }],
       forms: [{
         label: 'Nama',
-        name: 'name'
+        name: 'name',
+        type: 'text'
       }]
     };
   }
@@ -2310,8 +2361,8 @@ __webpack_require__.r(__webpack_exports__);
             name: "login"
           });
         })["catch"](function (err) {
-          console.log(err);
-          alert(err.message);
+          console.log(err.response.data);
+          alert(err.response.data.message);
         });
       }
     }
@@ -2399,7 +2450,8 @@ __webpack_require__.r(__webpack_exports__);
           _helpers_auth__WEBPACK_IMPORTED_MODULE_0__["default"].saveUser(response.data);
           window.location.reload();
         })["catch"](function (err) {
-          alert(err.message);
+          console.log(err.response.data);
+          alert(err.response.data.message);
         });
       } else {
         alert('email & password harus diisi! silakan periksa kembali');
@@ -2453,6 +2505,19 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         label: "Alamat",
         name: "address"
+      }],
+      forms: [{
+        label: 'Nama',
+        name: 'name',
+        type: 'text'
+      }, {
+        label: 'Nomor HP',
+        name: 'phone',
+        type: 'text'
+      }, {
+        label: 'Alamat',
+        name: 'address',
+        type: 'textarea'
       }]
     };
   }
@@ -38149,6 +38214,41 @@ var render = function() {
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "modal-body" }, [
+                _vm.hasError
+                  ? _c(
+                      "div",
+                      {
+                        staticClass:
+                          "alert alert-danger alert-dismissible fade show",
+                        attrs: { role: "alert" }
+                      },
+                      [
+                        _vm._v(
+                          "\n            " +
+                            _vm._s(_vm.errorMessage) +
+                            "\n            "
+                        ),
+                        _c(
+                          "button",
+                          {
+                            staticClass: "close",
+                            attrs: {
+                              type: "button",
+                              "data-dismiss": "alert",
+                              "aria-label": "Close"
+                            },
+                            on: { click: _vm.resetForm }
+                          },
+                          [
+                            _c("span", { attrs: { "aria-hidden": "true" } }, [
+                              _vm._v("×")
+                            ])
+                          ]
+                        )
+                      ]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
                 _c(
                   "form",
                   {
@@ -38687,7 +38787,12 @@ var render = function() {
     "div",
     [
       _c("table-component", {
-        attrs: { url: _vm.url, columns: _vm.columns, title: _vm.title }
+        attrs: {
+          url: _vm.url,
+          columns: _vm.columns,
+          title: _vm.title,
+          forms: _vm.forms
+        }
       })
     ],
     1
