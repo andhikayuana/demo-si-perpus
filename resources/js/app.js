@@ -7,11 +7,13 @@
 import VueRouter from 'vue-router';
 import routes from './routes';
 import auth from './helpers/auth';
+import Paginate from 'vuejs-paginate';
 
 require('./bootstrap');
 
 window.Vue = require('vue');
 window.Vue.use(VueRouter);
+Vue.component('paginate', Paginate);
 
 /**
  * The following block of code may be used to automatically register your
