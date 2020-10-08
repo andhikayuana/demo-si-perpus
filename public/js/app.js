@@ -2054,6 +2054,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["title", "url", "forms"],
   mounted: function mounted() {
@@ -2067,7 +2079,7 @@ __webpack_require__.r(__webpack_exports__);
       _this.body = item;
     });
     this.forms.filter(function (form) {
-      return form.type == "dropdown";
+      return form.type == "dropdown" || form.type == "multiple_select";
     }).forEach(function (form) {
       that.dropdownOptions[form.name] = [];
     });
@@ -2691,18 +2703,31 @@ __webpack_require__.r(__webpack_exports__);
         name: "members_id",
         type: "dropdown"
       }, {
-        label: 'Tanggal Pinjam',
-        name: 'borrowed_at',
-        type: 'date'
+        label: "Tanggal Pinjam",
+        name: "borrowed_at",
+        type: "date"
       }, {
-        label: 'Jatuh Tempo',
-        name: 'due_return_at',
-        type: 'date'
+        label: "Jatuh Tempo",
+        name: "due_return_at",
+        type: "date"
+      }, {
+        label: "Pinjam buku apa?",
+        name: "books",
+        type: "multiple_select"
       }]
     };
   },
   methods: {
     onDropdownSearch: function onDropdownSearch(obj) {
+      if (obj.formName == 'members_id') {
+        this.onSearchMembers(obj);
+      } else if (obj.formName == 'books') {
+        this.onSearchBooks(obj);
+      } else {
+        alert('not supported');
+      }
+    },
+    onSearchMembers: function onSearchMembers(obj) {
       var _this = this;
 
       axios.get(BASE_URL_API + "members?name=" + obj.q).then(function (response) {
@@ -2713,6 +2738,24 @@ __webpack_require__.r(__webpack_exports__);
         });
 
         _this.$emit("on-dropdown-options-updated", {
+          formName: obj.formName,
+          options: options
+        });
+      })["catch"](function (err) {
+        console.log(err.response);
+      });
+    },
+    onSearchBooks: function onSearchBooks(obj) {
+      var _this2 = this;
+
+      axios.get(BASE_URL_API + "books?name=" + obj.q).then(function (response) {
+        console.log(response);
+        var options = response.data.data.map(function (item) {
+          item.label = item.title;
+          return item;
+        });
+
+        _this2.$emit("on-dropdown-options-updated", {
           formName: obj.formName,
           options: options
         });
@@ -38566,6 +38609,32 @@ var render = function() {
                           : form.type == "dropdown"
                           ? _c("v-select", {
                               attrs: {
+                                options: _vm.dropdownOptions[form.name],
+                                reduce: function(item) {
+                                  return item.id
+                                }
+                              },
+                              on: {
+                                search: function(search, loading) {
+                                  return _vm.onDropdownSearch(
+                                    search,
+                                    loading,
+                                    form.name
+                                  )
+                                }
+                              },
+                              model: {
+                                value: _vm.body[form.name],
+                                callback: function($$v) {
+                                  _vm.$set(_vm.body, form.name, $$v)
+                                },
+                                expression: "body[form.name]"
+                              }
+                            })
+                          : form.type == "multiple_select"
+                          ? _c("v-select", {
+                              attrs: {
+                                multiple: "",
                                 options: _vm.dropdownOptions[form.name],
                                 reduce: function(item) {
                                   return item.id

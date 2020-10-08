@@ -77,6 +77,18 @@
                   "
                   v-model="body[form.name]"
                 ></v-select>
+                <v-select
+                  v-else-if="form.type == 'multiple_select'"
+                  multiple
+                  :options="dropdownOptions[form.name]"
+                  :reduce="(item) => item.id"
+                  @search="
+                    (search, loading) =>
+                      onDropdownSearch(search, loading, form.name)
+                  "
+                  v-model="body[form.name]"
+                >
+                </v-select>
                 <input
                   v-else
                   type="text"
@@ -124,7 +136,9 @@ export default {
     });
 
     this.forms
-      .filter((form) => form.type == "dropdown")
+      .filter(
+        (form) => form.type == "dropdown" || form.type == "multiple_select"
+      )
       .forEach((form) => {
         that.dropdownOptions[form.name] = [];
       });
