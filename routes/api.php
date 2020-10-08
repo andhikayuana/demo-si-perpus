@@ -16,3 +16,20 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/test', 'TestController@index');
+
+Route::post('/auth/login', 'AuthController@login');
+
+Route::group([
+    'middleware' => ['auth:api']
+], function () {
+    Route::post('/auth/logout', 'AuthController@logout');
+    Route::apiResources([
+        'members' => 'MemberController',
+        'book-categories' => 'BookCategoryController',
+        'books' => 'BookController',
+        'trx-borrows' => 'TrxBorrowController',
+        'trx-returns' => 'TrxReturnController',
+    ]);
+});

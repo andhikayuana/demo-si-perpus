@@ -11,6 +11,14 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+// Route::get('/', function () {
+//     return view('vue-example');
+// });
+
+Route::get('/{any}', function(){
+    return view('vue-example');
+})->where('any', '.*');
+
+Route::get('/halo', function () {
+    return 'halo';
 });
