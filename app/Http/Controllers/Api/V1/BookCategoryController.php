@@ -13,9 +13,14 @@ class BookCategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return BookCategory::orderByDesc('id')->paginate(10);
+        $query = BookCategory::query();
+
+        if ($request->has('name') && !empty($request->name)) {
+            $query->where('name', 'LIKE', '%'.$request->name.'%');
+        }
+        return $query->orderByDesc('id')->paginate(10);
     }
 
     /**

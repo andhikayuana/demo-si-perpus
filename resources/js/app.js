@@ -8,12 +8,14 @@ import VueRouter from 'vue-router';
 import routes from './routes';
 import auth from './helpers/auth';
 import Paginate from 'vuejs-paginate';
+import vSelect from 'vue-select';
 
 require('./bootstrap');
 
 window.Vue = require('vue');
 window.Vue.use(VueRouter);
 Vue.component('paginate', Paginate);
+Vue.component('v-select', vSelect);
 
 /**
  * The following block of code may be used to automatically register your

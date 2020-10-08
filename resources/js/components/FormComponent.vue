@@ -46,6 +46,28 @@
               >
                 <label :for="form.name">{{ form.label }}</label>
                 <input
+                  v-if="form.type == 'number'"
+                  type="number"
+                  class="form-control"
+                  :id="form.name"
+                  :placeholder="form.label"
+                  v-model="body[form.name]"
+                />
+                <textarea
+                  v-else-if="form.type == 'textarea'"
+                  class="form-control"
+                  v-model="body[form.name]"
+                  :id="form.name"
+                ></textarea>
+                <v-select
+                  v-else-if="form.type == 'dropdown'"
+                  :options="dropdownOptions"
+                  :reduce="item => item.id"
+                  @search="onDropdownSearch"
+                  v-model="body[form.name]"
+                ></v-select>
+                <input
+                  v-else
                   type="text"
                   class="form-control"
                   :id="form.name"
@@ -89,11 +111,16 @@ export default {
     this.$parent.$on("on-edit", (item) => {
       this.body = item;
     });
+
+    this.$parent.$parent.$on('on-dropdown-options-updated', (options) => {
+      this.dropdownOptions = _.uniqWith(this.dropdownOptions.concat(options), _.isEqual);
+    });
   },
   data() {
     return {
       body: {},
       errorMessage: null,
+      dropdownOptions: []
     };
   },
   methods: {
@@ -102,7 +129,7 @@ export default {
         console.log(this.isNewRecord);
         const request = this.isNewRecord
           ? axios.post(this.url, this.body)
-          : axios.put(this.url+'/'+this.body.id, this.body);
+          : axios.put(this.url + "/" + this.body.id, this.body);
 
         request
           .then((response) => {
@@ -119,6 +146,12 @@ export default {
       this.body = {};
       this.errorMessage = null;
     },
+    onDropdownSearch(q, loading) {
+      this.$emit('on-dropdown-search', {
+        q: q,
+        loading: loading
+      });
+    }
   },
   computed: {
     hasError() {

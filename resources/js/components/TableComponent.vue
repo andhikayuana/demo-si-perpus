@@ -51,6 +51,7 @@
       :url="url"
       :forms="forms"
       @on-saved="onSaved"
+      @on-dropdown-search="onDropdownSearch"
     >
     </form-component>
   </div>
@@ -134,6 +135,9 @@ export default {
       this.response.current_page = pageNum;
       this.fetchData();
     },
+    onDropdownSearch(obj) {
+      this.$emit('on-dropdown-search', obj);
+    }
   },
   computed: {
     getUrl() {
