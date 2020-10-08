@@ -66,3 +66,7 @@ php artisan serve
 ```
 
 - sekarang anda bisa akes dengan browser, http://localhost:8000
+
+## Screenshot
+
+![Alt text](./screenshot.png "Screenshot Manajemen Anggota")
