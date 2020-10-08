@@ -15,7 +15,12 @@ class MemberController extends Controller
      */
     public function index()
     {
-        return Member::orderByDesc('id')->paginate(10);
+        $query = Member::query();
+
+        if ($request->has('name') && !empty($request->name)) {
+            $query->where('name', 'LIKE', '%'.$request->name.'%');
+        }
+        return $query->orderByDesc('id')->paginate(10);
     }
 
     /**

@@ -2043,6 +2043,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["title", "url", "forms"],
   mounted: function mounted() {
@@ -2055,15 +2066,22 @@ __webpack_require__.r(__webpack_exports__);
     this.$parent.$on("on-edit", function (item) {
       _this.body = item;
     });
-    this.$parent.$parent.$on('on-dropdown-options-updated', function (options) {
-      _this.dropdownOptions = _.uniqWith(_this.dropdownOptions.concat(options), _.isEqual);
+    this.forms.filter(function (form) {
+      return form.type == "dropdown";
+    }).forEach(function (form) {
+      that.dropdownOptions[form.name] = [];
+    });
+    this.$parent.$parent.$on("on-dropdown-options-updated", function (obj) {
+      _this.dropdownOptions[obj.formName] = _.uniqWith(_this.dropdownOptions[obj.formName].concat(obj.options), _.isEqual);
+
+      _this.$forceUpdate();
     });
   },
   data: function data() {
     return {
       body: {},
       errorMessage: null,
-      dropdownOptions: []
+      dropdownOptions: {}
     };
   },
   methods: {
@@ -2071,7 +2089,6 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       if (!this.hasError) {
-        console.log(this.isNewRecord);
         var request = this.isNewRecord ? axios.post(this.url, this.body) : axios.put(this.url + "/" + this.body.id, this.body);
         request.then(function (response) {
           $("#formModal").modal("hide");
@@ -2087,10 +2104,11 @@ __webpack_require__.r(__webpack_exports__);
       this.body = {};
       this.errorMessage = null;
     },
-    onDropdownSearch: function onDropdownSearch(q, loading) {
-      this.$emit('on-dropdown-search', {
+    onDropdownSearch: function onDropdownSearch(q, loading, formName) {
+      this.$emit("on-dropdown-search", {
         q: q,
-        loading: loading
+        loading: loading,
+        formName: formName
       });
     }
   },
@@ -2371,7 +2389,10 @@ __webpack_require__.r(__webpack_exports__);
           return item;
         });
 
-        _this.$emit("on-dropdown-options-updated", options);
+        _this.$emit("on-dropdown-options-updated", {
+          formName: obj.formName,
+          options: options
+        });
       })["catch"](function (err) {
         console.log(err.response);
       });
@@ -2639,7 +2660,68 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ __webpack_exports__["default"] = ({});
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      title: "Peminjaman Buku",
+      url: BASE_URL_API + "trx-borrows",
+      columns: [{
+        label: "ID",
+        name: "id"
+      }, {
+        label: "Anggota",
+        name: "member.name"
+      }, {
+        label: "Tanggal Pinjam",
+        name: "borrowed_at"
+      }, {
+        label: "Jatuh Tempo",
+        name: "due_return_at"
+      }],
+      forms: [{
+        label: "Anggota",
+        name: "members_id",
+        type: "dropdown"
+      }, {
+        label: 'Tanggal Pinjam',
+        name: 'borrowed_at',
+        type: 'date'
+      }, {
+        label: 'Jatuh Tempo',
+        name: 'due_return_at',
+        type: 'date'
+      }]
+    };
+  },
+  methods: {
+    onDropdownSearch: function onDropdownSearch(obj) {
+      var _this = this;
+
+      axios.get(BASE_URL_API + "members?name=" + obj.q).then(function (response) {
+        console.log(response);
+        var options = response.data.data.map(function (item) {
+          item.label = item.name;
+          return item;
+        });
+
+        _this.$emit("on-dropdown-options-updated", {
+          formName: obj.formName,
+          options: options
+        });
+      })["catch"](function (err) {
+        console.log(err.response);
+      });
+    }
+  }
+});
 
 /***/ }),
 
@@ -2656,7 +2738,28 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ __webpack_exports__["default"] = ({});
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      title: "Pengembalian Buku",
+      url: BASE_URL_API + "trx-returns",
+      columns: [{
+        label: "ID",
+        name: "id"
+      }, {
+        label: "Anggota",
+        name: "trx_borrow.member.name"
+      }]
+    };
+  }
+});
 
 /***/ }),
 
@@ -38338,7 +38441,11 @@ var render = function() {
                               "data-dismiss": "alert",
                               "aria-label": "Close"
                             },
-                            on: { click: _vm.resetForm }
+                            on: {
+                              click: function($event) {
+                                _vm.errorMessage = null
+                              }
+                            }
                           },
                           [
                             _c("span", { attrs: { "aria-hidden": "true" } }, [
@@ -38400,6 +38507,36 @@ var render = function() {
                                 }
                               }
                             })
+                          : form.type == "date"
+                          ? _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.body[form.name],
+                                  expression: "body[form.name]"
+                                }
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                type: "date",
+                                id: form.name,
+                                placeholder: form.label
+                              },
+                              domProps: { value: _vm.body[form.name] },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.body,
+                                    form.name,
+                                    $event.target.value
+                                  )
+                                }
+                              }
+                            })
                           : form.type == "textarea"
                           ? _c("textarea", {
                               directives: [
@@ -38429,12 +38566,20 @@ var render = function() {
                           : form.type == "dropdown"
                           ? _c("v-select", {
                               attrs: {
-                                options: _vm.dropdownOptions,
+                                options: _vm.dropdownOptions[form.name],
                                 reduce: function(item) {
                                   return item.id
                                 }
                               },
-                              on: { search: _vm.onDropdownSearch },
+                              on: {
+                                search: function(search, loading) {
+                                  return _vm.onDropdownSearch(
+                                    search,
+                                    loading,
+                                    form.name
+                                  )
+                                }
+                              },
                               model: {
                                 value: _vm.body[form.name],
                                 callback: function($$v) {
@@ -39038,7 +39183,21 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [_vm._v("hello trx borrow")])
+  return _c(
+    "div",
+    [
+      _c("table-component", {
+        attrs: {
+          url: _vm.url,
+          columns: _vm.columns,
+          title: _vm.title,
+          forms: _vm.forms
+        },
+        on: { "on-dropdown-search": _vm.onDropdownSearch }
+      })
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -39062,7 +39221,20 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [_vm._v("hello trx return")])
+  return _c(
+    "div",
+    [
+      _c("table-component", {
+        attrs: {
+          url: _vm.url,
+          columns: _vm.columns,
+          title: _vm.title,
+          forms: _vm.forms
+        }
+      })
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

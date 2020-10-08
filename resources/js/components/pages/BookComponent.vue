@@ -68,7 +68,10 @@ export default {
             item.label = item.name;
             return item;
           });
-          this.$emit("on-dropdown-options-updated", options);
+          this.$emit("on-dropdown-options-updated", {
+            formName: obj.formName,
+            options: options
+          });
         })
         .catch((err) => {
           console.log(err.response);

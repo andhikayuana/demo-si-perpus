@@ -33,7 +33,7 @@
                 class="close"
                 data-dismiss="alert"
                 aria-label="Close"
-                @click="resetForm"
+                @click="errorMessage = null"
               >
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -53,6 +53,14 @@
                   :placeholder="form.label"
                   v-model="body[form.name]"
                 />
+                <input
+                  v-else-if="form.type == 'date'"
+                  type="date"
+                  class="form-control"
+                  :id="form.name"
+                  :placeholder="form.label"
+                  v-model="body[form.name]"
+                />
                 <textarea
                   v-else-if="form.type == 'textarea'"
                   class="form-control"
@@ -61,9 +69,12 @@
                 ></textarea>
                 <v-select
                   v-else-if="form.type == 'dropdown'"
-                  :options="dropdownOptions"
-                  :reduce="item => item.id"
-                  @search="onDropdownSearch"
+                  :options="dropdownOptions[form.name]"
+                  :reduce="(item) => item.id"
+                  @search="
+                    (search, loading) =>
+                      onDropdownSearch(search, loading, form.name)
+                  "
                   v-model="body[form.name]"
                 ></v-select>
                 <input
@@ -112,21 +123,31 @@ export default {
       this.body = item;
     });
 
-    this.$parent.$parent.$on('on-dropdown-options-updated', (options) => {
-      this.dropdownOptions = _.uniqWith(this.dropdownOptions.concat(options), _.isEqual);
+    this.forms
+      .filter((form) => form.type == "dropdown")
+      .forEach((form) => {
+        that.dropdownOptions[form.name] = [];
+      });
+
+    this.$parent.$parent.$on("on-dropdown-options-updated", (obj) => {
+      this.dropdownOptions[obj.formName] = _.uniqWith(
+        this.dropdownOptions[obj.formName].concat(obj.options),
+        _.isEqual
+      );
+
+      this.$forceUpdate();
     });
   },
   data() {
     return {
       body: {},
       errorMessage: null,
-      dropdownOptions: []
+      dropdownOptions: {},
     };
   },
   methods: {
     onClickedSave() {
       if (!this.hasError) {
-        console.log(this.isNewRecord);
         const request = this.isNewRecord
           ? axios.post(this.url, this.body)
           : axios.put(this.url + "/" + this.body.id, this.body);
@@ -146,12 +167,13 @@ export default {
       this.body = {};
       this.errorMessage = null;
     },
-    onDropdownSearch(q, loading) {
-      this.$emit('on-dropdown-search', {
+    onDropdownSearch(q, loading, formName) {
+      this.$emit("on-dropdown-search", {
         q: q,
-        loading: loading
+        loading: loading,
+        formName: formName,
       });
-    }
+    },
   },
   computed: {
     hasError() {
