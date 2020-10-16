@@ -48,6 +48,12 @@ BASE_URL_API=http://localhost:8000/api/v1/
 
 ```
 
+- jangan lupa membuat `APP_KEY` dengan cara
+
+```bash
+php artisan key:generate
+```
+
 - jalankan migrasi database dengan perintah
 
 ```bash
