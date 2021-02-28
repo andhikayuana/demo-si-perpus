@@ -7,6 +7,7 @@ use App\TrxBorrow;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use App\Http\Requests\TrxBorrowStoreRequest;
 
 class TrxBorrowController extends Controller
 {
@@ -28,19 +29,11 @@ class TrxBorrowController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\TrxBorrowStoreRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TrxBorrowStoreRequest $request)
     {
-        $this->validate($request, [
-            'members_id' => 'required|integer',
-            'borrowed_at' => 'required|date',
-            'due_return_at' => 'required|date',
-            'books' => 'required|array',
-            'books.*' => 'distinct'
-        ]);
-
         $data = \DB::transaction(function () use ($request) {
             $trxBorrow = TrxBorrow::create($request->only([
                 'members_id',

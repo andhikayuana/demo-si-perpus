@@ -2078,7 +2078,7 @@ __webpack_require__.r(__webpack_exports__);
     this.$parent.$on("on-edit", function (item) {
       _this.body = item;
     });
-    this.forms.filter(function (form) {
+    that.forms.filter(function (form) {
       return form.type == "dropdown" || form.type == "multiple_select";
     }).forEach(function (form) {
       that.dropdownOptions[form.name] = [];
@@ -2131,6 +2131,11 @@ __webpack_require__.r(__webpack_exports__);
     },
     isNewRecord: function isNewRecord() {
       return !this.body.hasOwnProperty("id");
+    },
+    getSelectedBooks: function getSelectedBooks() {
+      return this.body.details.map(function (el) {
+        return el.book;
+      });
     }
   }
 });

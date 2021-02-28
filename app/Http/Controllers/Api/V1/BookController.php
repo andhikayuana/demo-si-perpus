@@ -6,6 +6,8 @@ use App\Book;
 use App\BookCategory;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\BookStoreRequest;
+use App\Http\Requests\BookUpdateRequest;
 
 class BookController extends Controller
 {
@@ -24,19 +26,11 @@ class BookController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\BookStoreRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(BookStoreRequest $request)
     {
-        $this->validate($request, [
-            'title' => 'required',
-            'description' => 'nullable',
-            'total' => 'required|integer',
-            'cover_url' => 'nullable|url',
-            'book_categories_id' => 'required|integer'
-        ]);
-
         return Book::create($request->only([
             'title',
             'description',
@@ -60,18 +54,15 @@ class BookController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\BookUpdateRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(BookUpdateRequest $request, $id)
     {
         $book = Book::findOrFail($id);
 
         if ($request->has('title')) {
-            $request->validate([
-                'title' => 'required'
-            ]);
             $book->title = $request->title;
         }
 
@@ -80,9 +71,6 @@ class BookController extends Controller
         }
 
         if ($request->has('total')) {
-            $request->validate([
-                'total' => 'required|integer'
-            ]);
             $book->total = $request->total;
         }
 
@@ -91,9 +79,6 @@ class BookController extends Controller
         }
 
         if ($request->has('book_categories_id')) {
-            $request->validate([
-                'book_categories_id' => 'required|integer'
-            ]);
             $book->book_categories_id = $request->book_categories_id;
         }
 

@@ -135,7 +135,7 @@ export default {
       this.body = item;
     });
 
-    this.forms
+    that.forms
       .filter(
         (form) => form.type == "dropdown" || form.type == "multiple_select"
       )
@@ -197,6 +197,9 @@ export default {
     isNewRecord() {
       return !this.body.hasOwnProperty("id");
     },
+    getSelectedBooks() {
+      return this.body.details.map((el) => el.book);
+    }
   },
 };
 </script>

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\BookCategory;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\BookCategoryStoreRequest;
+use App\Http\Requests\BookCategoryUpdateRequest;
 
 class BookCategoryController extends Controller
 {
@@ -26,15 +28,11 @@ class BookCategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\BookCategoryStoreRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(BookCategoryStoreRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required'
-        ]);
-
         return BookCategory::create($request->only('name'));
     }
 
@@ -52,18 +50,15 @@ class BookCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\BookCategoryUpdateRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(BookCategoryUpdateRequest $request, $id)
     {
         $bookCategory = BookCategory::findOrFail($id);
 
         if ($request->has('name')) {
-            $request->validate([
-                'name' => 'required'
-            ]);
             $bookCategory->name = $request->name;
         }
         
