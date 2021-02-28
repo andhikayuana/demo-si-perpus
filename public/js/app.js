@@ -2077,10 +2077,11 @@ __webpack_require__.r(__webpack_exports__);
     });
     this.$parent.$on("on-edit", function (item) {
       _this.body = item;
+      that.forms.filter(that.isDropDownOrMultipleSelect).forEach(function (form) {
+        that.onDropdownSearch('', true, form.name);
+      });
     });
-    this.forms.filter(function (form) {
-      return form.type == "dropdown" || form.type == "multiple_select";
-    }).forEach(function (form) {
+    that.forms.filter(that.isDropDownOrMultipleSelect).forEach(function (form) {
       that.dropdownOptions[form.name] = [];
     });
     this.$parent.$parent.$on("on-dropdown-options-updated", function (obj) {
@@ -2122,6 +2123,9 @@ __webpack_require__.r(__webpack_exports__);
         loading: loading,
         formName: formName
       });
+    },
+    isDropDownOrMultipleSelect: function isDropDownOrMultipleSelect(form) {
+      return form.type == "dropdown" || form.type == "multiple_select";
     }
   },
   computed: {
@@ -55537,7 +55541,7 @@ var routes = [{
   component: _components_pages_HomeComponent__WEBPACK_IMPORTED_MODULE_1__["default"],
   props: {
     header: 'SI Perpus',
-    body: 'ini body teksnya'
+    body: 'lorem ipsum dolor sit amet'
   },
   meta: {
     needAuth: true

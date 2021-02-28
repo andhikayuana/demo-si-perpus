@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Member;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\MemberStoreRequest;
+use App\Http\Requests\MemberUpdateRequest;
 
 class MemberController extends Controller
 {
@@ -26,17 +28,11 @@ class MemberController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\MemberStoreRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(MemberStoreRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|max:100',
-            'address' => 'required',
-            'phone' => 'required|max:15,numeric'
-        ]);
-
         return Member::create($request->only([
             'name', 'address', 'phone'
         ]));
@@ -56,32 +52,23 @@ class MemberController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\MemberUpdateRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(MemberUpdateRequest $request, $id)
     {
         $member = Member::findOrFail($id);
 
         if ($request->has('name')) {
-            $request->validate([
-                'name' => 'required|max:100'
-            ]);
             $member->name = $request->name;
         }
 
         if ($request->has('address')) {
-            $request->validate([
-                'address' => 'required'
-            ]);
             $member->address = $request->address;
         }
 
         if ($request->has('phone')) {
-            $request->validate([
-                'phone' => 'required|max:15,numeric'
-            ]);
             $member->phone = $request->phone;
         }
 

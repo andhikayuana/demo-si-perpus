@@ -133,12 +133,17 @@ export default {
 
     this.$parent.$on("on-edit", (item) => {
       this.body = item;
+
+      that.forms
+        .filter(that.isDropDownOrMultipleSelect)
+        .forEach((form) => {
+          that.onDropdownSearch('', true, form.name);
+        });
+
     });
 
-    this.forms
-      .filter(
-        (form) => form.type == "dropdown" || form.type == "multiple_select"
-      )
+    that.forms
+      .filter(that.isDropDownOrMultipleSelect)
       .forEach((form) => {
         that.dropdownOptions[form.name] = [];
       });
@@ -188,6 +193,9 @@ export default {
         formName: formName,
       });
     },
+    isDropDownOrMultipleSelect(form) {
+      return form.type == "dropdown" || form.type == "multiple_select";
+    }
   },
   computed: {
     hasError() {
@@ -195,7 +203,7 @@ export default {
     },
     isNewRecord() {
       return !this.body.hasOwnProperty("id");
-    },
+    }
   },
 };
 </script>

@@ -6,6 +6,7 @@ use App\TrxReturn;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use App\Http\Requests\TrxReturnStoreRequest;
 
 class TrxReturnController extends Controller
 {
@@ -27,15 +28,11 @@ class TrxReturnController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\TrxReturnStoreRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TrxReturnStoreRequest $request)
     {
-        $this->validate($request, [
-            'trx_borrows_id' => 'required|integer'
-        ]);
-
         $isReturned = TrxReturn::where('trx_borrows_id', $request->trx_borrows_id)->exists();
 
         if ($isReturned) {
@@ -71,7 +68,7 @@ class TrxReturnController extends Controller
      */
     public function update(Request $request, $id)
     {
-        abort(404);
+        abort(404, "Resource NOT FOUND");
     }
 
     /**
@@ -82,6 +79,6 @@ class TrxReturnController extends Controller
      */
     public function destroy($id)
     {
-        abort(404);
+        abort(404, "Resource NOT FOUND");
     }
 }

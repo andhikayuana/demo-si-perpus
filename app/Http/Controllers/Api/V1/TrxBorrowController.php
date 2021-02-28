@@ -7,6 +7,7 @@ use App\TrxBorrow;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use App\Http\Requests\TrxBorrowStoreRequest;
 
 class TrxBorrowController extends Controller
 {
@@ -17,30 +18,31 @@ class TrxBorrowController extends Controller
      */
     public function index()
     {
-        return TrxBorrow::with([
+        $items = TrxBorrow::with([
                 'member',
                 'details.book'
             ])
             ->orderByDesc('id')
             ->paginate(10);
+
+        $items->getCollection()->transform(function ($item) {
+            $item->books = collect($item->details)->pluck('book.id')->all();
+            $item->borrowed_at = date("Y-m-d", strtotime($item->borrowed_at));
+            $item->due_return_at = date("Y-m-d", strtotime($item->due_return_at));
+            return $item;
+        });
+
+        return $items;
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\TrxBorrowStoreRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TrxBorrowStoreRequest $request)
     {
-        $this->validate($request, [
-            'members_id' => 'required|integer',
-            'borrowed_at' => 'required|date',
-            'due_return_at' => 'required|date',
-            'books' => 'required|array',
-            'books.*' => 'distinct'
-        ]);
-
         $data = \DB::transaction(function () use ($request) {
             $trxBorrow = TrxBorrow::create($request->only([
                 'members_id',
@@ -103,7 +105,7 @@ class TrxBorrowController extends Controller
      */
     public function update(Request $request, $id)
     {
-        abort(404);
+        abort(404, "Resource NOT FOUND");
     }
 
     /**
@@ -114,6 +116,6 @@ class TrxBorrowController extends Controller
      */
     public function destroy($id)
     {
-        abort(404);
+        abort(404, "Resource NOT FOUND");
     }
 }
