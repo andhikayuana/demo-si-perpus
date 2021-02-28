@@ -2077,12 +2077,12 @@ __webpack_require__.r(__webpack_exports__);
     });
     this.$parent.$on("on-edit", function (item) {
       _this.body = item;
+      that.forms.filter(that.isDropDownOrMultipleSelect).forEach(function (form) {
+        that.onDropdownSearch('', true, form.name);
+      });
     });
-    that.forms.filter(function (form) {
-      return form.type == "dropdown" || form.type == "multiple_select";
-    }).forEach(function (form) {
+    that.forms.filter(that.isDropDownOrMultipleSelect).forEach(function (form) {
       that.dropdownOptions[form.name] = [];
-      that.body[form.name] = [];
     });
     this.$parent.$parent.$on("on-dropdown-options-updated", function (obj) {
       _this.dropdownOptions[obj.formName] = _.uniqWith(_this.dropdownOptions[obj.formName].concat(obj.options), _.isEqual);
@@ -2123,6 +2123,9 @@ __webpack_require__.r(__webpack_exports__);
         loading: loading,
         formName: formName
       });
+    },
+    isDropDownOrMultipleSelect: function isDropDownOrMultipleSelect(form) {
+      return form.type == "dropdown" || form.type == "multiple_select";
     }
   },
   computed: {
@@ -2131,11 +2134,6 @@ __webpack_require__.r(__webpack_exports__);
     },
     isNewRecord: function isNewRecord() {
       return !this.body.hasOwnProperty("id");
-    },
-    getSelectedBooks: function getSelectedBooks() {
-      return this.body.details.map(function (el) {
-        return el.book;
-      });
     }
   }
 });

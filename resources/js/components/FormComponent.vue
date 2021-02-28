@@ -133,15 +133,19 @@ export default {
 
     this.$parent.$on("on-edit", (item) => {
       this.body = item;
+
+      that.forms
+        .filter(that.isDropDownOrMultipleSelect)
+        .forEach((form) => {
+          that.onDropdownSearch('', true, form.name);
+        });
+
     });
 
     that.forms
-      .filter(
-        (form) => form.type == "dropdown" || form.type == "multiple_select"
-      )
+      .filter(that.isDropDownOrMultipleSelect)
       .forEach((form) => {
         that.dropdownOptions[form.name] = [];
-        that.body[form.name] = [];
       });
 
     this.$parent.$parent.$on("on-dropdown-options-updated", (obj) => {
@@ -189,6 +193,9 @@ export default {
         formName: formName,
       });
     },
+    isDropDownOrMultipleSelect(form) {
+      return form.type == "dropdown" || form.type == "multiple_select";
+    }
   },
   computed: {
     hasError() {
@@ -196,9 +203,6 @@ export default {
     },
     isNewRecord() {
       return !this.body.hasOwnProperty("id");
-    },
-    getSelectedBooks() {
-      return this.body.details.map((el) => el.book);
     }
   },
 };

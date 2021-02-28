@@ -68,7 +68,7 @@ class TrxReturnController extends Controller
      */
     public function update(Request $request, $id)
     {
-        abort(404);
+        abort(404, "Resource NOT FOUND");
     }
 
     /**
@@ -79,6 +79,6 @@ class TrxReturnController extends Controller
      */
     public function destroy($id)
     {
-        abort(404);
+        abort(404, "Resource NOT FOUND");
     }
 }

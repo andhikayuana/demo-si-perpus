@@ -18,12 +18,21 @@ class TrxBorrowController extends Controller
      */
     public function index()
     {
-        return TrxBorrow::with([
+        $items = TrxBorrow::with([
                 'member',
                 'details.book'
             ])
             ->orderByDesc('id')
             ->paginate(10);
+
+        $items->getCollection()->transform(function ($item) {
+            $item->books = collect($item->details)->pluck('book.id')->all();
+            $item->borrowed_at = date("Y-m-d", strtotime($item->borrowed_at));
+            $item->due_return_at = date("Y-m-d", strtotime($item->due_return_at));
+            return $item;
+        });
+
+        return $items;
     }
 
     /**
@@ -96,7 +105,7 @@ class TrxBorrowController extends Controller
      */
     public function update(Request $request, $id)
     {
-        abort(404);
+        abort(404, "Resource NOT FOUND");
     }
 
     /**
@@ -107,6 +116,6 @@ class TrxBorrowController extends Controller
      */
     public function destroy($id)
     {
-        abort(404);
+        abort(404, "Resource NOT FOUND");
     }
 }
