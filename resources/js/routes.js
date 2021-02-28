@@ -14,7 +14,7 @@ const routes = [
         component: HomeComponent,
         props: {
             header: 'SI Perpus',
-            body: 'ini body teksnya'
+            body: 'lorem ipsum dolor sit amet'
         },
         meta: {
             needAuth: true

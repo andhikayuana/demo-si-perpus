@@ -2082,6 +2082,7 @@ __webpack_require__.r(__webpack_exports__);
       return form.type == "dropdown" || form.type == "multiple_select";
     }).forEach(function (form) {
       that.dropdownOptions[form.name] = [];
+      that.body[form.name] = [];
     });
     this.$parent.$parent.$on("on-dropdown-options-updated", function (obj) {
       _this.dropdownOptions[obj.formName] = _.uniqWith(_this.dropdownOptions[obj.formName].concat(obj.options), _.isEqual);
@@ -55537,7 +55538,7 @@ var routes = [{
   component: _components_pages_HomeComponent__WEBPACK_IMPORTED_MODULE_1__["default"],
   props: {
     header: 'SI Perpus',
-    body: 'ini body teksnya'
+    body: 'lorem ipsum dolor sit amet'
   },
   meta: {
     needAuth: true

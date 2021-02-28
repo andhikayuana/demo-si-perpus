@@ -141,6 +141,7 @@ export default {
       )
       .forEach((form) => {
         that.dropdownOptions[form.name] = [];
+        that.body[form.name] = [];
       });
 
     this.$parent.$parent.$on("on-dropdown-options-updated", (obj) => {
